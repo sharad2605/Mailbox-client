@@ -12,7 +12,22 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+body.dark-mode {
+  background-color: #121212;
+  color: white;
+}
 
+body.light-mode {
+  background-color: white;
+  color: black;
+}
+.dark-mode .total-amount {
+  color: white; /* Dark mode mein white text */
+}
+
+.light-mode .total-amount {
+  color: black; /* Light mode mein black text */
+}
 a {
   font-weight: 500;
   color: #646cff;
@@ -24,10 +39,13 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
+  padding-top: 60px;
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+}
+.nav-link {
+  text-decoration: none !important;
 }
 
 h1 {
