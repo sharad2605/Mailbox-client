@@ -5,7 +5,7 @@ import 'setimmediate'
 import App from './App.jsx'
 import { Provider } from 'react-redux';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import store from './Store/index.jsx';
+import store from './Component/Store/index.jsx';
 
 createRoot(document.getElementById('root')).render(
   <Provider store={store}>

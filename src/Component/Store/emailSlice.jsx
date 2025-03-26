@@ -4,6 +4,7 @@ import { EditorState, convertToRaw } from 'draft-js';
 const emailSlice = createSlice({
     name: 'email',
     initialState: {
+        emails: [],
         email: '',
         subject: '',
         body: JSON.stringify(convertToRaw(EditorState.createEmpty().getCurrentContent())), // ✅ Store as serializable JSON
@@ -17,6 +18,9 @@ const emailSlice = createSlice({
         },
         setEmailBody(state, action) {
             state.body = JSON.stringify(convertToRaw(action.payload.getCurrentContent())); // ✅ Convert EditorState to JSON
+        },
+        addEmail(state, action) {
+            state.emails.push(action.payload); // Add a new email to the emails array
         },
         resetEmailComposition(state) {
             state.email = '';

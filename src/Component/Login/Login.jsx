@@ -2,7 +2,7 @@ import React, { useState,useEffect } from "react";
 import { Form, Button, Container, Card, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom"; // 
 import "./Login.css"; 
-import { authActions } from "../../Store/authSlice";
+import { authActions } from "../Store/authSlice";
 import { useDispatch,useSelector } from "react-redux";
 
 const Login = () => {
@@ -45,13 +45,10 @@ const Login = () => {
         console.log("User Logged In:", data);
         localStorage.setItem("token", data.idToken);
         localStorage.setItem("email", data.email);
-        
-        if(authActions.login)
-          {
-            alert("Account created successfully,Now Login to continue");
-          }  
 
-        navigate("/home"); // ✅ Login hone ke baad redirect hoga
+        navigate("/inbox");
+        
+ // ✅ Login hone ke baad redirect hoga
       })
       .catch((err) => {
         setError(err.message);

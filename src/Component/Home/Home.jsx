@@ -1,25 +1,22 @@
 import React, { useState } from "react";
-import { Modal, Button, Container } from "react-bootstrap";
+import Sidebar from "../../UI/Sidebar/Sidebar";
 import ComposeMail from "../ComposeMail/ComposeMail";
-import { Editor } from "react-draft-wysiwyg";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-
-
+import Email from "../Email/Email";
 
 const Home = () => {
   const [showModal, setShowModal] = useState(false);
 
   return (
-    <>
-      <h1>Welcome to Mailbox Client</h1>
+    <div className="d-flex">
+  {/* Sidebar - Fixed Width */}
+  <Sidebar onCompose={() => setShowModal(true)} />
 
-      {/* Compose Mail Button */}
-      <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-        Compose Mail
-      </button>
-      <ComposeMail showModal={showModal} setShowModal={setShowModal}/>
-      
-    </>
+  {/* Main Content - Flexible Width */}
+  <Email/>
+  {/* Compose Mail Modal */}
+  <ComposeMail showModal={showModal} setShowModal={setShowModal} />
+</div>
+
   );
 };
 
