@@ -1,19 +1,27 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Form, Button, Container, Card, Alert } from "react-bootstrap";
-import { useNavigate } from "react-router-dom"; // ✅ Navigate ke liye
+import { useNavigate } from "react-router-dom"; // 
 import "./Login.css"; 
+import { authActions } from "../../Store/authSlice";
+import { useDispatch,useSelector } from "react-redux";
 
 const Login = () => {
-  const [email, setEmail] = useState(""); // ✅ State add ki
-  const [password, setPassword] = useState(""); // ✅ State add ki
-  const [error, setError] = useState(""); // ✅ Error state add ki
-  const navigate = useNavigate(); // ✅ useNavigate hook use kiya
+  const [email, setEmail] = useState(""); //
+  const [password, setPassword] = useState(""); // 
+  const [error, setError] = useState(""); // 
+  const navigate = useNavigate(); 
+  const dispatch = useDispatch();
+  const authState = useSelector((state)=> state.auth)
+  
+  useEffect(() => {
+    console.log("Redux State Updated:", authState);
+  }, [authState]); 
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
 
-    console.log("Login Clicked:", email, password); // ✅ Debugging ke liye
+    console.log("Login Clicked:", email, password); 
 
     const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${import.meta.env.VITE_API_KEY}`;
 
@@ -33,10 +41,15 @@ const Login = () => {
         if (data.error) {
           throw new Error(data.error.message);
         }
-
+        dispatch(authActions.login({ token: data.idToken, email: data.email }));
         console.log("User Logged In:", data);
         localStorage.setItem("token", data.idToken);
         localStorage.setItem("email", data.email);
+        
+        if(authActions.login)
+          {
+            alert("Account created successfully,Now Login to continue");
+          }  
 
         navigate("/home"); // ✅ Login hone ke baad redirect hoga
       })

@@ -1,0 +1,21 @@
+.editor-wrapper {
+    border-radius: 5px;
+    background: #fff;
+  }
+  
+  .editor-container {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    min-height: 250px;
+  }
+  
+  .modal-dialog {
+    max-width: 700px; /* Increase modal width */
+  }
+  
+  .modal-footer {
+    display: flex;
+    justify-content: space-between;
+  }
+  
