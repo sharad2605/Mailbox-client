@@ -9,7 +9,7 @@ const SentMail = () => {
     const url = 'https://mailbox-client-auth-default-rtdb.firebaseio.com';
     const userEmail = useSelector((state) => state.auth.email);
     const sanitizedReceiver = userEmail?.replace(/[@.]/g, "");
-    const emailArray = useSelector((state) => state.email.emails);
+    const emailArray = useSelector((state) => state.email.sentEmails);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -21,7 +21,7 @@ const SentMail = () => {
                     const emailsWithId = data
                         ? Object.keys(data).map((key) => ({ id: key, ...data[key] }))
                         : [];
-                    dispatch(emailActions.setEmails(emailsWithId)); // ✅ redux me set
+                    dispatch(emailActions.setSentEmails(emailsWithId)); // ✅ redux me set
                 } else {
                     console.error('❌ Failed to retrieve data.');
                     dispatch(emailActions.setEmails([])); // ✅ clear redux

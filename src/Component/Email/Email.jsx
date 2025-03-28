@@ -8,10 +8,11 @@ const Email = ({type='inbox'}) => {
   const dispatch = useDispatch();
   const userEmail = useSelector((state) => state.auth.email);
   const sanitizedReceiver = userEmail?.replace(/[@.]/g, "");
-  const emails = useSelector((state) => state.email.emails); // ✅ direct redux se
+  const emails = useSelector((state) => state.email.inboxEmails); // ✅ direct redux se
 
   useEffect(() => {
     const fetchInbox = async () => {
+      console.log("📢 Fetching mails...");
       const res = await fetch(`https://mailbox-client-auth-default-rtdb.firebaseio.com/inbox/${sanitizedReceiver}.json`);
       const data = await res.json();
       if (!data) return;
@@ -23,10 +24,13 @@ const Email = ({type='inbox'}) => {
           ...data[key]
         }));
 
-      dispatch(emailActions.setEmails(loadedEmails));
+      dispatch(emailActions.setInboxEmails(loadedEmails));
     };
     fetchInbox();
-  }, [dispatch, sanitizedReceiver]);
+    const interval = setInterval(fetchInbox, 20000); // fetch every 2 seconds
+
+    return () => clearInterval(interval); // cleanup
+  }, [dispatch, sanitizedReceiver,emails.length]);
 
   const deleteEmailHandler = (emailId) => {
     console.log("Deleting email with ID:", emailId);

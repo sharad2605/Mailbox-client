@@ -5,6 +5,8 @@ const emailSlice = createSlice({
     name: 'email',
     initialState: {
         emails: [],
+        inboxEmails: [],     // ✅ inbox ke liye
+        sentEmails: [],
         email: '',
         subject: '',
         unreadCount: 0,
@@ -17,12 +19,25 @@ const emailSlice = createSlice({
         },
         deleteEmail(state, action) {
             const emailId = action.payload;
-            state.emails = state.emails.filter((email) => email.id !== emailId);
-          },
-        setEmails(state, action) {
-            state.emails = action.payload;
-            state.unreadCount = action.payload.filter(email => !email.read).length;
-            state.emails = action.payload.filter(email => email && email.to && email.subject);
+            const deletingMail = state.emails.find(mail => mail.id === emailId);
+        
+            if (deletingMail) {
+                // Agar mail unread tha to count kam karo
+                if (!deletingMail.read) {
+                    state.unreadCount--;
+                }
+        
+                // Mail ko hata do list se
+                state.emails = state.emails.filter(mail => mail.id !== emailId);
+            }
+        },
+        setInboxEmails(state, action) {
+            state.inboxEmails = action.payload.filter(email => email && email.to && email.subject);
+            state.unreadCount = state.inboxEmails.filter(email => !email.read).length;
+        },
+        setSentEmails(state, action) {
+            state.sentEmails = action.payload.filter(email => email && email.to && email.subject);
+            // Yaha unreadCount ko haath bhi mat lagana ❌
         },
         setEmailSubject(state, action) {
             state.subject = action.payload;
