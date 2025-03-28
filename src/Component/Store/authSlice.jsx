@@ -4,7 +4,7 @@ const initialState = {
   token: localStorage.getItem("token") || null,  // Retrieve token from localStorage (if available)
   isLoggedIn: !!localStorage.getItem("token"),  // If token exists, set isLoggedIn to true
   email: localStorage.getItem("email") || '', 
-  receiverEmail:'',  // Retrieve email from localStorage (if available)
+   // Retrieve email from localStorage (if available)
 };
 
 const authSlice = createSlice({

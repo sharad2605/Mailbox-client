@@ -10,8 +10,8 @@ const Sidebar = ({ onCompose }) => {
   const unreadEmails = emails.filter((email) => email.read === false);
   const totalUnreadMessages = unreadEmails.length;
 
-  console.log(Array.isArray(emails)); // Should log true if it's an array
-console.log(emails); // Check the actual value of emails
+//   console.log(Array.isArray(emails)); // Should log true if it's an array
+// console.log(emails); // Check the actual value of emails
   
   
 

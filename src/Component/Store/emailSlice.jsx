@@ -15,6 +15,10 @@ const emailSlice = createSlice({
             state.email = action.payload;
             
         },
+        deleteEmail(state, action) {
+            const emailId = action.payload;
+            state.emails = state.emails.filter((email) => email.id !== emailId);
+          },
         setEmails(state, action) {
             state.emails = action.payload;
             state.unreadCount = action.payload.filter(email => !email.read).length;
@@ -26,17 +30,17 @@ const emailSlice = createSlice({
         setEmailBody(state, action) {
             state.body = JSON.stringify(convertToRaw(action.payload.getCurrentContent())); // ✅ Convert EditorState to JSON
         },
-        addEmail(state, action) {
-            state.emails.push(action.payload); // Add a new email to the emails array
-        },
-        resetEmailComposition(state) {
-            state.email = '';
-            state.subject = '';
-            state.body = JSON.stringify(convertToRaw(EditorState.createEmpty().getCurrentContent()));
-        },
+        // addEmail(state, action) {
+        //     state.emails.push(action.payload); // Add a new email to the emails array
+        // },
+        // resetEmailComposition(state) {
+        //     state.email = '';
+        //     state.subject = '';
+        //     state.body = JSON.stringify(convertToRaw(EditorState.createEmpty().getCurrentContent()));
+        // },
         markAsRead(state, action) {
             const mailId = action.payload;
-            const mail = state.emails.find(m => m.id === mailId);
+            const mail = state.emails.find(m => m.id === mailId ==action.payload);
             if (mail && !mail.read) {
               mail.read = true;
               state.unreadCount--;

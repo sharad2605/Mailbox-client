@@ -1,38 +1,56 @@
 import React, { useEffect, useState } from "react";
 import EmailItem from "./EmailItem";
 import "./EmailItem.css";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
+import { emailActions } from "../Store/emailSlice";
+
 
 const SentMail = () => {
     const url = 'https://mailbox-client-auth-default-rtdb.firebaseio.com';
     const userEmail = useSelector((state) => state.auth.email);
     const sanitizedReceiver = userEmail?.replace(/[@.]/g, "");
-    const [emailArray, setEmailArray] = useState([]);
+    const emailArray = useSelector((state) => state.email.emails);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`${url}/sent/${sanitizedReceiver}.json`, {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' },
-                });
-
+                const response = await fetch(`${url}/sent/${sanitizedReceiver}.json`);
                 if (response.ok) {
-                    const responseData = await response.json();
-                    console.log('Data retrieved successfully:', responseData);
-                    setEmailArray(responseData ? Object.values(responseData) : []);
+                    const data = await response.json();
+                    const emailsWithId = data
+                        ? Object.keys(data).map((key) => ({ id: key, ...data[key] }))
+                        : [];
+                    dispatch(emailActions.setEmails(emailsWithId)); // ✅ redux me set
                 } else {
                     console.error('❌ Failed to retrieve data.');
-                    setEmailArray([]);
+                    dispatch(emailActions.setEmails([])); // ✅ clear redux
                 }
             } catch (error) {
                 console.error('❌ Error retrieving data:', error);
-                setEmailArray([]);
+                dispatch(emailActions.setEmails([])); // ✅ clear redux
             }
         };
-
+    
         fetchData();
-    }, [sanitizedReceiver]);
+    }, [dispatch, sanitizedReceiver]);
+    
+    
+
+    const deleteEmailHandler = (emailId) => {
+        console.log("Deleting Sent email with ID:", emailId);
+        const emailPath = `sent/${sanitizedReceiver}/${emailId}.json`;
+        fetch(`https://mailbox-client-auth-default-rtdb.firebaseio.com/${emailPath}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+        }).then(() => {
+            dispatch(emailActions.deleteEmail(emailId)); // Update Redux state
+        }).catch((error) => {
+            console.error("Error deleting sent email:", error);
+        });
+    };
+    
+    
 
     return (
         <div className="email-list-container">
@@ -42,11 +60,11 @@ const SentMail = () => {
                 </p>
             ) : (
                 emailArray.map((email, i) => (
-                    <EmailItem key={i} email={email} showUnreadDot={false} />
+                    <EmailItem key={email.id} email={email} showUnreadDot={false} onDelete={deleteEmailHandler} />
                 ))
             )}
         </div>
     );
-};
+}    
 
 export default SentMail;

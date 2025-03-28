@@ -4,8 +4,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import { emailActions } from '../Store/emailSlice';
 import { useNavigate } from 'react-router-dom';
 import './EmailView.css';
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const EmailItem = ({ email , showUnreadDot = true}) => {
+
+
+const EmailItem = ({ email , showUnreadDot = true,onDelete, type = 'inbox'}) => {
+
+  // console.log("Email Item Props:", email, showUnreadDot, onDelete); // Log all props
+  // console.log("onDelete in EmailItem:", onDelete); // This should log a function
+  if (typeof onDelete !== 'function') {
+    console.error("onDelete is not a function in EmailItem");
+  }
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userEmail = useSelector((state) => state.auth.email);
@@ -33,6 +44,16 @@ const EmailItem = ({ email , showUnreadDot = true}) => {
     }
   };
 
+  const deleteEmailHandler = () => {
+    if (email && email.id) {
+      console.log('Deleting email with ID:', email.id);  // Debug log
+      onDelete(email.id);  // Call the parent delete handler with the email ID
+    } else {
+      console.error('Email or email ID is missing');
+    }
+  };
+  
+
   return (
     <div className="email-item"  style={{ cursor: 'pointer' }}>
       <input type="checkbox" className="email-checkbox"  />
@@ -44,6 +65,9 @@ const EmailItem = ({ email , showUnreadDot = true}) => {
         </div>
       </div>
       <span className="email-date">{email.time}</span>
+      <div>
+      <span><FontAwesomeIcon icon={faTrashAlt} style={{ fontSize: '20px', color: 'red' }} onClick={deleteEmailHandler} /></span>
+      </div>
     </div>
   );
 };

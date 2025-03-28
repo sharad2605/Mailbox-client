@@ -6,6 +6,7 @@ const EmailView = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  
   const email = location.state?.email;
 
   if (!email) {
