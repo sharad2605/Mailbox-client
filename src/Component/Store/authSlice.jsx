@@ -1,38 +1,40 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    token: localStorage.getItem("token") || null,
-    isLoggedIn: !!localStorage.getItem("token"),
-    email: localStorage.getItem("email") || "",
+  token: localStorage.getItem("token") || null,  // Retrieve token from localStorage (if available)
+  isLoggedIn: !!localStorage.getItem("token"),  // If token exists, set isLoggedIn to true
+  email: localStorage.getItem("email") || '', 
+  receiverEmail:'',  // Retrieve email from localStorage (if available)
 };
 
 const authSlice = createSlice({
-    name: "auth",
-    initialState: initialState,
-    reducers: {
-        login(state, action) {
-            // 🔥 Corrected: Get email from action.payload
-            const email = action.payload.email; 
-            const sanitizedEmail = email.replace(/[@.]/g, ""); // Firebase ke liye sanitize karo
-            
-            localStorage.setItem("endpoint", sanitizedEmail);
-            localStorage.setItem("token", action.payload.token);
-            localStorage.setItem("email", email);
+  name: "auth",
+  initialState: initialState,
+   
+  reducers: {
+    login(state, action) {
+      // 🔥 Set token and email from action.payload and store in localStorage
+      state.token = action.payload.token;
+      state.email = action.payload.email;
+      state.isLoggedIn = true;
 
-            state.token = action.payload.token;
-            state.email = email;
-            state.isLoggedIn = true;
-        },
-        logout(state) {
-            localStorage.removeItem("token");
-            localStorage.removeItem("email");
-            localStorage.removeItem("endpoint");
-
-            state.token = null;
-            state.email = "";
-            state.isLoggedIn = false;
-        },
+      localStorage.setItem("token", action.payload.token);  // Save token to localStorage
+      localStorage.setItem("email", action.payload.email);  // Save email to localStorage
     },
+    logout(state) {
+      // Remove token and email from localStorage on logout
+      localStorage.removeItem("token");
+      localStorage.removeItem("email");
+
+      state.token = null;
+      state.email = "";
+      state.isLoggedIn = false; // Logout also updates isLoggedIn
+    },
+    setReceiverEmail(state, action) {
+      state.receiverEmail = action.payload; // 🔥 Store receiver email in Redux
+    }
+  },
+  
 });
 
 export const authActions = authSlice.actions;

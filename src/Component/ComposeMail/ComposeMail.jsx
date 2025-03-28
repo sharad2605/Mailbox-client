@@ -3,16 +3,26 @@ import { EditorState, convertToRaw } from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { Modal, Button, Container } from 'react-bootstrap';
+import { useDispatch } from 'react-redux' ;
+import {emailActions} from '../Store/emailSlice';
 
 const ComposeMail = ({ showModal, setShowModal }) => {
   const [email, setEmail] = useState('');
   const [subject, setSubject] = useState('');
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  const dispatch = useDispatch();
 
   // 🔥 Function to Extract Plain Text from Editor
   const getPlainText = () => {
     const rawContent = convertToRaw(editorState.getCurrentContent());
     return rawContent.blocks.map(block => block.text).join('\n');
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    const sanitizedReceiver = e.target.value.replace(/[@.]/g, '');
+    dispatch(emailActions.setEmail(sanitizedReceiver)); // ✅ Redux me store
+  
   };
 
   // 📩 Function to Send Email (POST Request)
@@ -21,6 +31,7 @@ const ComposeMail = ({ showModal, setShowModal }) => {
     const senderEmail = localStorage.getItem('email');
     const sanitizedSender = senderEmail.replace(/[@.]/g, '');
     const sanitizedReceiver = email.replace(/[@.]/g, '');
+    
     
     const formatDate = (date) => {
       return new Intl.DateTimeFormat('en-US', {
@@ -55,6 +66,10 @@ const ComposeMail = ({ showModal, setShowModal }) => {
       
       if (inboxResponse.ok && sentResponse.ok) {
         console.log('✅ Email Sent Successfully!');
+        setEmail('');
+    setSubject('');
+    setEditorState(EditorState.createEmpty());   // ✅ Editor bhi empty
+    
         setShowModal(false);
       } else {
         console.error('❌ Failed to Send Email');
@@ -74,7 +89,7 @@ const ComposeMail = ({ showModal, setShowModal }) => {
           <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={handleEmailChange} 
             placeholder="To: example@gmail.com"
             className="form-control my-2"
           />

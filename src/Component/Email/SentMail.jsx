@@ -1,23 +1,18 @@
 import React, { useEffect, useState } from "react";
 import EmailItem from "./EmailItem";
-import "./EmailItem.css";  // ✅ CSS Import
+import "./EmailItem.css";
+import { useSelector } from "react-redux";
 
 const SentMail = () => {
-    const endpoint = localStorage.getItem('endpoint');
     const url = 'https://mailbox-client-auth-default-rtdb.firebaseio.com';
-
+    const userEmail = useSelector((state) => state.auth.email);
+    const sanitizedReceiver = userEmail?.replace(/[@.]/g, "");
     const [emailArray, setEmailArray] = useState([]);
 
     useEffect(() => {
-        if (!endpoint) {
-            console.warn("⚠ Endpoint not found in localStorage");
-            setEmailArray([]);
-            return;
-        }
-
         const fetchData = async () => {
             try {
-                const response = await fetch(`${url}/sent/${endpoint}.json`, {
+                const response = await fetch(`${url}/sent/${sanitizedReceiver}.json`, {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' },
                 });
@@ -37,23 +32,21 @@ const SentMail = () => {
         };
 
         fetchData();
-    }, [endpoint]);
+    }, [sanitizedReceiver]);
 
     return (
         <div className="email-list-container">
-            {endpoint ? (
-                emailArray.length > 0 ? (
-                    emailArray.map((email, index) => (
-                        <EmailItem key={index} email={email} />
-                    ))
-                ) : (
-                    <p>No Emails Found</p>
-                )
+            {emailArray.length === 0 ? (
+                <p style={{ textAlign: 'center', marginTop: '50px', color: 'gray' }}>
+                    No Sent Mails Found
+                </p>
             ) : (
-                <p style={{ color: "red" }}>⚠ No endpoint found. Please log in again.</p>
+                emailArray.map((email, i) => (
+                    <EmailItem key={i} email={email} showUnreadDot={false} />
+                ))
             )}
         </div>
     );
-}
+};
 
 export default SentMail;

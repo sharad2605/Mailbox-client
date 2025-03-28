@@ -7,11 +7,18 @@ const emailSlice = createSlice({
         emails: [],
         email: '',
         subject: '',
+        unreadCount: 0,
         body: JSON.stringify(convertToRaw(EditorState.createEmpty().getCurrentContent())), // ✅ Store as serializable JSON
     },
     reducers: {
         setEmail(state, action) {
             state.email = action.payload;
+            
+        },
+        setEmails(state, action) {
+            state.emails = action.payload;
+            state.unreadCount = action.payload.filter(email => !email.read).length;
+            state.emails = action.payload.filter(email => email && email.to && email.subject);
         },
         setEmailSubject(state, action) {
             state.subject = action.payload;
@@ -26,7 +33,15 @@ const emailSlice = createSlice({
             state.email = '';
             state.subject = '';
             state.body = JSON.stringify(convertToRaw(EditorState.createEmpty().getCurrentContent()));
-        }
+        },
+        markAsRead(state, action) {
+            const mailId = action.payload;
+            const mail = state.emails.find(m => m.id === mailId);
+            if (mail && !mail.read) {
+              mail.read = true;
+              state.unreadCount--;
+            }
+          },
     }
 });
 

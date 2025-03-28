@@ -1,7 +1,20 @@
 import React from "react";
-import { NavLink } from "react-router-dom"; // Using NavLink for active class management
+import { NavLink } from "react-router-dom"; 
+import { useSelector } from "react-redux";
+
+// Using NavLink for active class management
 
 const Sidebar = ({ onCompose }) => {
+
+  const emails = useSelector((state) => state.email.emails);
+  const unreadEmails = emails.filter((email) => email.read === false);
+  const totalUnreadMessages = unreadEmails.length;
+
+  console.log(Array.isArray(emails)); // Should log true if it's an array
+console.log(emails); // Check the actual value of emails
+  
+  
+
   return (
     <div className="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" style={{
       width: "250px",
@@ -22,7 +35,7 @@ const Sidebar = ({ onCompose }) => {
             to="/inbox"
             className={({ isActive }) => isActive ? 'nav-link text-white active' : 'nav-link text-white'}
           >
-            Inbox 📥
+            Inbox 📥 ({totalUnreadMessages > 0 ? totalUnreadMessages : 'No unread messages'})
           </NavLink>
         </li>
         <li>

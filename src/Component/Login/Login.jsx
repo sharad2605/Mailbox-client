@@ -42,6 +42,7 @@ const Login = () => {
           throw new Error(data.error.message);
         }
         dispatch(authActions.login({ token: data.idToken, email: data.email }));
+        console.log("Redux State Updated:", authState);
         console.log("User Logged In:", data);
         localStorage.setItem("token", data.idToken);
         localStorage.setItem("email", data.email);

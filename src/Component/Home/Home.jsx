@@ -11,7 +11,7 @@ const Home = () => {
   {/* Sidebar - Fixed Width */}
   <Sidebar onCompose={() => setShowModal(true)} />
 
-  {/* Main Content - Flexible Width */}
+  {/* Main Content - Flexible Width */} 
   <Email/>
   {/* Compose Mail Modal */}
   <ComposeMail showModal={showModal} setShowModal={setShowModal} />

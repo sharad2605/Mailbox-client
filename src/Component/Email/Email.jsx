@@ -1,65 +1,43 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import EmailItem from "./EmailItem"; 
+import {emailActions} from '../Store/emailSlice';
 
 
 const Email = () => {
-  const [emails, setEmails] = useState([]);
+  const dispatch = useDispatch();
+  const userEmail = useSelector((state) => state.auth.email);
+  const sanitizedReceiver = userEmail?.replace(/[@.]/g, "");
+  const emails = useSelector((state) => state.email.emails); // ✅ direct redux se
 
   useEffect(() => {
     const fetchInbox = async () => {
-      const userEmail = localStorage.getItem("email"); // 🔥 Current logged-in user
-      if (!userEmail) {
-        console.error("❌ User not logged in!");
-        return;
-      }
+      const res = await fetch(`https://mailbox-client-auth-default-rtdb.firebaseio.com/inbox/${sanitizedReceiver}.json`);
+      const data = await res.json();
+      if (!data) return;
 
-      const sanitizedEmail = userEmail.replace(/[@.]/g, ""); // ✅ Remove @ and . for Firebase key
-      const inboxUrl = `https://mailbox-client-auth-default-rtdb.firebaseio.com/inbox/${sanitizedEmail}.json`;
-
-      try {
-        const response = await fetch(inboxUrl);
-        const data = await response.json();
-
-        if (!data) {
-          console.log("📭 Inbox Empty");
-          setEmails([]); // ✅ Set empty array if no emails
-          return;
-        }
-
-        console.log("📩 Full Inbox Data:", data);
-
-        // ✅ Correctly convert Firebase object to array
-        const parsedEmails = Object.entries(data).map(([id, email]) => ({
-          id, // Unique ID
-          ...email, // Spread email data
+      const loadedEmails = Object.keys(data)
+        .filter(key => data[key] !== null) // ✅ null check
+        .map(key => ({
+          id: key,
+          ...data[key]
         }));
 
-        console.log("✅ Parsed Received Emails:", parsedEmails);
-        setEmails(parsedEmails);
-      } catch (error) {
-        console.error("🚨 Error Fetching Inbox:", error);
-      }
+      dispatch(emailActions.setEmails(loadedEmails));
     };
-
     fetchInbox();
-  }, []);
+  }, [dispatch, sanitizedReceiver]);
+
 
   return (
-    <div className="container mt-6 ">
-      <h2>📥 Inbox</h2>
+    <div className="email-list-container">
       {emails.length === 0 ? (
-        <p>No emails found!</p>
-      ) : (
-        <ul className="list-group">
-          {emails.map((email) => (
-            <li key={email.id} className="list-group-item">
-              <strong>From:</strong> {email.from} <br />
-              <strong>Subject:</strong> {email.subject} <br />
-              <strong>Time:</strong> {email.time} <br />
-              <p>{email.body}</p>
-            </li>
-          ))}
-        </ul>
-      )}
+      <p style={{ textAlign: 'center', marginTop: '50px', color: 'gray' }}>No Mails Found</p>
+    ) : (
+      emails.map((email, i) => (
+        <EmailItem key={i} email={email} />
+      ))
+    )}
     </div>
   );
 };
